@@ -1,0 +1,233 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "AgentFrame",
+  "oneOf": [
+    {
+      "type": "object",
+      "properties": {
+        "agent_version": {
+          "$ref": "#/$defs/AgentVersion"
+        },
+        "application_state": {
+          "$ref": "#/$defs/ApplicationState"
+        },
+        "build_commit": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/BuildCommit"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "build_dirty": {
+          "type": [
+            "boolean",
+            "null"
+          ]
+        },
+        "container_id": {
+          "$ref": "#/$defs/ContainerId"
+        },
+        "display_name": {
+          "$ref": "#/$defs/DisplayName"
+        },
+        "platform": {
+          "$ref": "#/$defs/Platform"
+        },
+        "project_id": {
+          "$ref": "#/$defs/ProjectId"
+        },
+        "protocol_version": {
+          "type": "integer",
+          "format": "uint16",
+          "maximum": 65535,
+          "minimum": 0
+        },
+        "runtime": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/RuntimeMetadata"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "type": {
+          "type": "string",
+          "const": "register"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "type",
+        "protocol_version",
+        "project_id",
+        "container_id",
+        "display_name",
+        "platform",
+        "agent_version",
+        "application_state"
+      ]
+    },
+    {
+      "type": "object",
+      "properties": {
+        "application_state": {
+          "$ref": "#/$defs/ApplicationState"
+        },
+        "smuggler_session_id": {
+          "$ref": "#/$defs/SmugglerSessionId"
+        },
+        "type": {
+          "type": "string",
+          "const": "heartbeat"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "type",
+        "smuggler_session_id",
+        "application_state"
+      ]
+    }
+  ],
+  "$defs": {
+    "AgentVersion": {
+      "description": "No Unicode control characters or leading/trailing Unicode whitespace.",
+      "type": "string",
+      "maxLength": 64,
+      "minLength": 1
+    },
+    "ApplicationState": {
+      "type": "string",
+      "enum": [
+        "starting",
+        "running",
+        "exited",
+        "unknown"
+      ]
+    },
+    "BuildCommit": {
+      "type": "string",
+      "pattern": "^([0-9a-f]{40}|[0-9a-f]{64})$"
+    },
+    "ContainerId": {
+      "description": "Canonical mti TypeID with RFC 4122 variant UUIDv4; prefix is type-specific.",
+      "type": "string",
+      "pattern": "^container_[0-7][0-9a-hjkmnp-tv-z]{25}$"
+    },
+    "DisplayName": {
+      "description": "No Unicode control characters or leading/trailing Unicode whitespace.",
+      "type": "string",
+      "maxLength": 128,
+      "minLength": 1
+    },
+    "MetadataText": {
+      "description": "No Unicode control characters or leading/trailing Unicode whitespace.",
+      "type": "string",
+      "maxLength": 256,
+      "minLength": 1
+    },
+    "Platform": {
+      "type": "object",
+      "properties": {
+        "arch": {
+          "$ref": "#/$defs/PlatformName"
+        },
+        "os": {
+          "$ref": "#/$defs/PlatformName"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "os",
+        "arch"
+      ]
+    },
+    "PlatformName": {
+      "description": "No Unicode control characters or leading/trailing Unicode whitespace.",
+      "type": "string",
+      "maxLength": 32,
+      "minLength": 1
+    },
+    "ProjectId": {
+      "description": "Positive decimal i64, at most 9223372036854775807.",
+      "type": "string",
+      "pattern": "^[1-9][0-9]{0,18}$"
+    },
+    "RuntimeMetadata": {
+      "type": "object",
+      "properties": {
+        "cluster_name": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/MetadataText"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "container_name": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/MetadataText"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "namespace": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/MetadataText"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "pod_name": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/MetadataText"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "pod_uid": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/MetadataText"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "runtime_hint": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/MetadataText"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "additionalProperties": false
+    },
+    "SmugglerSessionId": {
+      "description": "Canonical mti TypeID with RFC 4122 variant UUIDv4; prefix is type-specific.",
+      "type": "string",
+      "pattern": "^smuggler_session_[0-7][0-9a-hjkmnp-tv-z]{25}$"
+    }
+  }
+}

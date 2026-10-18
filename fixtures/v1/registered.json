@@ -1,0 +1,14 @@
+{
+  "type": "registered",
+  "smuggler_session_id": "smuggler_session_00000000008008000000000000",
+  "notices": [
+    {
+      "id": "maintenance-2026-01-02-v1",
+      "level": "warning",
+      "message": "Scheduled maintenance tomorrow at 02:00 UTC."
+    }
+  ],
+  "heartbeat_interval_seconds": 15,
+  "lease_timeout_seconds": 45,
+  "server_time": "2026-01-01T00:00:00Z"
+}

@@ -1,0 +1,33 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "PageQuery",
+  "type": "object",
+  "properties": {
+    "cursor": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/Cursor"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "limit": {
+      "type": "integer",
+      "format": "uint16",
+      "default": 50,
+      "maximum": 65535,
+      "minimum": 0
+    }
+  },
+  "additionalProperties": false,
+  "$defs": {
+    "Cursor": {
+      "description": "No Unicode control characters or leading/trailing Unicode whitespace.",
+      "type": "string",
+      "maxLength": 512,
+      "minLength": 1
+    }
+  }
+}

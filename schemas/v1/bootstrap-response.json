@@ -1,0 +1,72 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "BootstrapResponse",
+  "type": "object",
+  "properties": {
+    "notices": {
+      "$ref": "#/$defs/Notices"
+    },
+    "protocol_version": {
+      "type": "integer",
+      "format": "uint16",
+      "maximum": 65535,
+      "minimum": 0
+    }
+  },
+  "additionalProperties": false,
+  "required": [
+    "protocol_version",
+    "notices"
+  ],
+  "$defs": {
+    "MessageLevel": {
+      "type": "string",
+      "enum": [
+        "info",
+        "warning",
+        "error"
+      ]
+    },
+    "MessageText": {
+      "description": "No Unicode control characters or leading/trailing Unicode whitespace.",
+      "type": "string",
+      "maxLength": 512,
+      "minLength": 1
+    },
+    "Notice": {
+      "description": "Server-authored plain text. Severity affects presentation only, never exit\nstatus or retry policy. The stable ID is for deduplication, not text lookup.",
+      "type": "object",
+      "properties": {
+        "id": {
+          "$ref": "#/$defs/NoticeId"
+        },
+        "level": {
+          "$ref": "#/$defs/MessageLevel"
+        },
+        "message": {
+          "$ref": "#/$defs/MessageText"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "level",
+        "message"
+      ]
+    },
+    "NoticeId": {
+      "description": "No Unicode control characters or leading/trailing Unicode whitespace.",
+      "type": "string",
+      "maxLength": 128,
+      "minLength": 1
+    },
+    "Notices": {
+      "description": "Notice IDs must be unique within this response.",
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/Notice"
+      },
+      "maxItems": 4
+    }
+  }
+}

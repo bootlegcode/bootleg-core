@@ -1,0 +1,13 @@
+{
+  "items": [
+    {
+      "project_id": "42",
+      "org_id": "org_00000000008008000000000000",
+      "name": "Example",
+      "url": null,
+      "active": true,
+      "end_to_end_encryption": false
+    }
+  ],
+  "next_cursor": null
+}

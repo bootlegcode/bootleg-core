@@ -1,0 +1,8 @@
+{
+  "device_grant_id": "device_grant_00000000008008000000000000",
+  "device_code": "fixture-only-device-secret",
+  "user_code": "ABCD-EFGH",
+  "verification_uri": "https://bootleg.example/device",
+  "expires_in": 600,
+  "interval": 5
+}

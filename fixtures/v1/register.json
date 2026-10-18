@@ -1,0 +1,16 @@
+{
+  "type": "register",
+  "protocol_version": 1,
+  "project_id": "42",
+  "container_id": "container_00000000008008000000000000",
+  "display_name": "api / web",
+  "build_commit": null,
+  "build_dirty": null,
+  "platform": {
+    "os": "linux",
+    "arch": "aarch64"
+  },
+  "agent_version": "0.1.0",
+  "runtime": null,
+  "application_state": "running"
+}

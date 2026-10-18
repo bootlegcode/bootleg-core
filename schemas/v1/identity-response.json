@@ -1,0 +1,39 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "IdentityResponse",
+  "type": "object",
+  "properties": {
+    "cli_credential_id": {
+      "$ref": "#/$defs/CliCredentialId"
+    },
+    "email": {
+      "type": "string"
+    },
+    "expires_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "user_id": {
+      "$ref": "#/$defs/UserId"
+    }
+  },
+  "additionalProperties": false,
+  "required": [
+    "user_id",
+    "email",
+    "cli_credential_id",
+    "expires_at"
+  ],
+  "$defs": {
+    "CliCredentialId": {
+      "description": "Canonical mti TypeID with RFC 4122 variant UUIDv4; prefix is type-specific.",
+      "type": "string",
+      "pattern": "^cli_credential_[0-7][0-9a-hjkmnp-tv-z]{25}$"
+    },
+    "UserId": {
+      "description": "Canonical mti TypeID with RFC 4122 variant UUIDv4; prefix is type-specific.",
+      "type": "string",
+      "pattern": "^user_[0-7][0-9a-hjkmnp-tv-z]{25}$"
+    }
+  }
+}

@@ -1,0 +1,74 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Page",
+  "type": "object",
+  "properties": {
+    "items": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/Organization"
+      }
+    },
+    "next_cursor": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/Cursor"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    }
+  },
+  "additionalProperties": false,
+  "required": [
+    "items"
+  ],
+  "$defs": {
+    "Cursor": {
+      "description": "No Unicode control characters or leading/trailing Unicode whitespace.",
+      "type": "string",
+      "maxLength": 512,
+      "minLength": 1
+    },
+    "DisplayName": {
+      "description": "No Unicode control characters or leading/trailing Unicode whitespace.",
+      "type": "string",
+      "maxLength": 128,
+      "minLength": 1
+    },
+    "OrgId": {
+      "description": "Canonical mti TypeID with RFC 4122 variant UUIDv4; prefix is type-specific.",
+      "type": "string",
+      "pattern": "^org_[0-7][0-9a-hjkmnp-tv-z]{25}$"
+    },
+    "OrgRole": {
+      "type": "string",
+      "enum": [
+        "owner",
+        "admin",
+        "member"
+      ]
+    },
+    "Organization": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "$ref": "#/$defs/DisplayName"
+        },
+        "org_id": {
+          "$ref": "#/$defs/OrgId"
+        },
+        "role": {
+          "$ref": "#/$defs/OrgRole"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "org_id",
+        "name",
+        "role"
+      ]
+    }
+  }
+}

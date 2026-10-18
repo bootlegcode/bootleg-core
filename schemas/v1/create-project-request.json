@@ -1,0 +1,28 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "CreateProjectRequest",
+  "type": "object",
+  "properties": {
+    "name": {
+      "$ref": "#/$defs/DisplayName"
+    },
+    "url": {
+      "type": [
+        "string",
+        "null"
+      ]
+    }
+  },
+  "additionalProperties": false,
+  "required": [
+    "name"
+  ],
+  "$defs": {
+    "DisplayName": {
+      "description": "No Unicode control characters or leading/trailing Unicode whitespace.",
+      "type": "string",
+      "maxLength": 128,
+      "minLength": 1
+    }
+  }
+}

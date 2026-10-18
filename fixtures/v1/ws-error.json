@@ -1,0 +1,10 @@
+{
+  "type": "error",
+  "error": {
+    "code": "protocol_incompatible",
+    "message": "Request could not be completed",
+    "level": "error",
+    "request_id": "req-fixture-1",
+    "retry_after_seconds": null
+  }
+}

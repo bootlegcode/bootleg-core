@@ -1,0 +1,20 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "DeviceTokenRequest",
+  "type": "object",
+  "properties": {
+    "device_code": {
+      "$ref": "#/$defs/SecretString"
+    }
+  },
+  "additionalProperties": false,
+  "required": [
+    "device_code"
+  ],
+  "$defs": {
+    "SecretString": {
+      "description": "Transport-only secret. Debug is redacted; Serialize deliberately exposes the\nvalue for protocol delivery. Never serialize secret-bearing DTOs as CLI output\nor logs. No Display implementation, no bearer/ID conversions.",
+      "type": "string"
+    }
+  }
+}

@@ -3,5 +3,15 @@ name = "bootleg-core"
 version = "0.1.0"
 edition = "2024"
 license-file = "LICENSE"
+description = "Portable Bootleg v1 wire contracts and protocol helpers"
 
 [dependencies]
+mti = { version = "=1.1.1", features = ["serde"] }
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+schemars = { version = "1", features = ["chrono04"] }
+chrono = { version = "0.4", default-features = false, features = ["std", "serde"] }
+thiserror = "2"
+
+[dev-dependencies]
+jsonschema = { version = "0.33", default-features = false }

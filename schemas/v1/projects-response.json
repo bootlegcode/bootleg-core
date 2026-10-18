@@ -1,0 +1,85 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Page",
+  "type": "object",
+  "properties": {
+    "items": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/Project"
+      }
+    },
+    "next_cursor": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/Cursor"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    }
+  },
+  "additionalProperties": false,
+  "required": [
+    "items"
+  ],
+  "$defs": {
+    "Cursor": {
+      "description": "No Unicode control characters or leading/trailing Unicode whitespace.",
+      "type": "string",
+      "maxLength": 512,
+      "minLength": 1
+    },
+    "DisplayName": {
+      "description": "No Unicode control characters or leading/trailing Unicode whitespace.",
+      "type": "string",
+      "maxLength": 128,
+      "minLength": 1
+    },
+    "OrgId": {
+      "description": "Canonical mti TypeID with RFC 4122 variant UUIDv4; prefix is type-specific.",
+      "type": "string",
+      "pattern": "^org_[0-7][0-9a-hjkmnp-tv-z]{25}$"
+    },
+    "Project": {
+      "type": "object",
+      "properties": {
+        "active": {
+          "type": "boolean"
+        },
+        "end_to_end_encryption": {
+          "type": "boolean"
+        },
+        "name": {
+          "$ref": "#/$defs/DisplayName"
+        },
+        "org_id": {
+          "$ref": "#/$defs/OrgId"
+        },
+        "project_id": {
+          "$ref": "#/$defs/ProjectId"
+        },
+        "url": {
+          "type": [
+            "string",
+            "null"
+          ]
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "project_id",
+        "org_id",
+        "name",
+        "active",
+        "end_to_end_encryption"
+      ]
+    },
+    "ProjectId": {
+      "description": "Positive decimal i64, at most 9223372036854775807.",
+      "type": "string",
+      "pattern": "^[1-9][0-9]{0,18}$"
+    }
+  }
+}

@@ -1,0 +1,9 @@
+{
+  "error": {
+    "code": "slow_down",
+    "message": "Request could not be completed",
+    "level": "warning",
+    "request_id": "req-fixture-1",
+    "retry_after_seconds": 5
+  }
+}

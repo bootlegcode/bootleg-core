@@ -1,0 +1,45 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "DeviceTokenResponse",
+  "type": "object",
+  "properties": {
+    "access_token": {
+      "$ref": "#/$defs/SecretString"
+    },
+    "cli_credential_id": {
+      "$ref": "#/$defs/CliCredentialId"
+    },
+    "expires_in": {
+      "type": "integer",
+      "format": "uint64",
+      "minimum": 0
+    },
+    "token_type": {
+      "$ref": "#/$defs/TokenType"
+    }
+  },
+  "additionalProperties": false,
+  "required": [
+    "cli_credential_id",
+    "access_token",
+    "token_type",
+    "expires_in"
+  ],
+  "$defs": {
+    "CliCredentialId": {
+      "description": "Canonical mti TypeID with RFC 4122 variant UUIDv4; prefix is type-specific.",
+      "type": "string",
+      "pattern": "^cli_credential_[0-7][0-9a-hjkmnp-tv-z]{25}$"
+    },
+    "SecretString": {
+      "description": "Transport-only secret. Debug is redacted; Serialize deliberately exposes the\nvalue for protocol delivery. Never serialize secret-bearing DTOs as CLI output\nor logs. No Display implementation, no bearer/ID conversions.",
+      "type": "string"
+    },
+    "TokenType": {
+      "type": "string",
+      "enum": [
+        "Bearer"
+      ]
+    }
+  }
+}

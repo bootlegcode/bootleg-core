@@ -1,0 +1,9 @@
+{
+  "error": {
+    "code": "authorization_pending",
+    "message": "Request could not be completed",
+    "level": "info",
+    "request_id": "req-fixture-1",
+    "retry_after_seconds": null
+  }
+}

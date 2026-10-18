@@ -1,0 +1,88 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "ErrorResponse",
+  "type": "object",
+  "properties": {
+    "error": {
+      "$ref": "#/$defs/ApiError"
+    }
+  },
+  "additionalProperties": false,
+  "required": [
+    "error"
+  ],
+  "$defs": {
+    "ApiError": {
+      "type": "object",
+      "properties": {
+        "code": {
+          "$ref": "#/$defs/ErrorCode"
+        },
+        "level": {
+          "$ref": "#/$defs/MessageLevel"
+        },
+        "message": {
+          "description": "Server-authored display text; codes drive behavior, not local text lookup.",
+          "$ref": "#/$defs/MessageText"
+        },
+        "request_id": {
+          "$ref": "#/$defs/RequestId"
+        },
+        "retry_after_seconds": {
+          "type": [
+            "integer",
+            "null"
+          ],
+          "format": "uint64",
+          "minimum": 0
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "code",
+        "message",
+        "level",
+        "request_id"
+      ]
+    },
+    "ErrorCode": {
+      "type": "string",
+      "enum": [
+        "unauthorized",
+        "forbidden",
+        "not_found",
+        "validation",
+        "rate_limited",
+        "service_unavailable",
+        "protocol_incompatible",
+        "conflict",
+        "quota_exceeded",
+        "authorization_pending",
+        "slow_down",
+        "access_denied",
+        "expired_token",
+        "invalid_grant"
+      ]
+    },
+    "MessageLevel": {
+      "type": "string",
+      "enum": [
+        "info",
+        "warning",
+        "error"
+      ]
+    },
+    "MessageText": {
+      "description": "No Unicode control characters or leading/trailing Unicode whitespace.",
+      "type": "string",
+      "maxLength": 512,
+      "minLength": 1
+    },
+    "RequestId": {
+      "description": "No Unicode control characters or leading/trailing Unicode whitespace.",
+      "type": "string",
+      "maxLength": 128,
+      "minLength": 1
+    }
+  }
+}

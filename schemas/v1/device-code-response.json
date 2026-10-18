@@ -1,0 +1,49 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "DeviceCodeResponse",
+  "type": "object",
+  "properties": {
+    "device_code": {
+      "$ref": "#/$defs/SecretString"
+    },
+    "device_grant_id": {
+      "$ref": "#/$defs/DeviceGrantId"
+    },
+    "expires_in": {
+      "type": "integer",
+      "format": "uint64",
+      "minimum": 0
+    },
+    "interval": {
+      "type": "integer",
+      "format": "uint64",
+      "minimum": 0
+    },
+    "user_code": {
+      "$ref": "#/$defs/SecretString"
+    },
+    "verification_uri": {
+      "type": "string"
+    }
+  },
+  "additionalProperties": false,
+  "required": [
+    "device_grant_id",
+    "device_code",
+    "user_code",
+    "verification_uri",
+    "expires_in",
+    "interval"
+  ],
+  "$defs": {
+    "DeviceGrantId": {
+      "description": "Canonical mti TypeID with RFC 4122 variant UUIDv4; prefix is type-specific.",
+      "type": "string",
+      "pattern": "^device_grant_[0-7][0-9a-hjkmnp-tv-z]{25}$"
+    },
+    "SecretString": {
+      "description": "Transport-only secret. Debug is redacted; Serialize deliberately exposes the\nvalue for protocol delivery. Never serialize secret-bearing DTOs as CLI output\nor logs. No Display implementation, no bearer/ID conversions.",
+      "type": "string"
+    }
+  }
+}

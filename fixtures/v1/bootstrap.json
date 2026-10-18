@@ -1,0 +1,10 @@
+{
+  "protocol_version": 1,
+  "notices": [
+    {
+      "id": "maintenance-2026-01-02-v1",
+      "level": "warning",
+      "message": "Scheduled maintenance tomorrow at 02:00 UTC."
+    }
+  ]
+}
