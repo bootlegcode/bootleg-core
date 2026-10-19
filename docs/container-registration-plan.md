@@ -2,6 +2,8 @@
 
 Status: original milestone proposal, archived in the versioned core repository. The shared wire checkpoint is now implemented in bootleg-core; [contract-v1.md](contract-v1.md) freezes the API/WS decisions and workstream handoffs and takes precedence for wire details. CLI, smuggler and web implementations remain separate work. This milestone updates the sequencing in `boot-leg-design.md`: authenticated discovery and dashboard presence come before file sync.
 
+> Historical note: numeric project IDs described below have been superseded by public `project_…` TypeIDs. See [the current identity contract](contract-v1.md#general-encoding-and-security). Public IDs and secret project keys remain separate values despite sharing a prefix.
+
 ## Milestone
 
 A developer authenticates from the CLI, creates or selects a project, obtains its project token, deploys smuggler as an entrypoint, and sees each running agent in the CLI and web UI. Verify both Kubernetes and plain Docker. No cluster API credentials, inbound agent ports, or Kubernetes API access required.

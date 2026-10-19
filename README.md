@@ -7,7 +7,7 @@ DB/cache, async runtime, process supervision or presence domain dependencies.
 The [versioned milestone plan](docs/container-registration-plan.md) describes the
 CLI, smuggler and web work remaining.
 
-- `ids`: canonical typed mti UUIDv4 identities; numeric-string ProjectId.
+- `ids`: canonical typed mti UUIDv4 identities, including `project_…` ProjectId.
 - `values`: bounded wire strings, full Git object IDs, redacted transport secrets.
 - `api`: device login, identity, projects, snapshots, pagination and errors.
 - `communication`: required client/version header parsing, message levels and bounded notices.

@@ -59,7 +59,11 @@ pub struct ErrorResponse {
 
 #[derive(Clone, Debug, Default, Serialize, Deserialize, JsonSchema)]
 #[serde(deny_unknown_fields)]
-pub struct DeviceCodeRequest {}
+pub struct DeviceCodeRequest {
+    /// Suggested label only; the approving user may edit it.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub device_name: Option<DisplayName>,
+}
 #[derive(Clone, Debug, Serialize, Deserialize, JsonSchema)]
 #[serde(deny_unknown_fields)]
 pub struct DeviceCodeResponse {

@@ -41,7 +41,7 @@ fn main() {
     };
     let register = AgentFrame::Register {
         protocol_version: 1,
-        project_id: ProjectId::new(42).unwrap(),
+        project_id: "project_00000000008008000000000001".parse().unwrap(),
         container_id: container.clone(),
         display_name: "api / web".parse().unwrap(),
         build_commit: None,
@@ -80,7 +80,7 @@ fn main() {
         "instances",
         &InstancesResponse {
             items: vec![ContainerSnapshot {
-                project_id: ProjectId::new(42).unwrap(),
+                project_id: "project_00000000008008000000000001".parse().unwrap(),
                 container_id: container,
                 display_name: "api / web".parse().unwrap(),
                 build_commit: None,
@@ -98,7 +98,7 @@ fn main() {
             server_time: now,
         },
     );
-    write("device-code-request", &DeviceCodeRequest {});
+    write("device-code-request", &DeviceCodeRequest::default());
     write(
         "device-code",
         &DeviceCodeResponse {
@@ -146,7 +146,7 @@ fn main() {
         },
     );
     let project = Project {
-        project_id: ProjectId::new(42).unwrap(),
+        project_id: "project_00000000008008000000000001".parse().unwrap(),
         org_id: org,
         name: "Example".parse().unwrap(),
         url: None,

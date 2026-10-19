@@ -73,6 +73,7 @@ fn identities_are_canonical_typed_v4() {
     check!(CliCredentialId, "cli_credential");
     check!(OrgId, "org");
     check!(UserId, "user");
+    check!(ProjectId, "project");
     assert!(
         ContainerId::new()
             .to_string()
@@ -81,7 +82,15 @@ fn identities_are_canonical_typed_v4() {
     );
 }
 #[test]
-fn project_identity_is_not_a_credential_or_json_number() {
+fn project_identity_is_a_type_id_not_a_json_number() {
+    let example = "project_6m8x91b0349vbrq30fxn997q5s";
+    let parsed = example.parse::<ProjectId>().unwrap();
+    assert_eq!(parsed.to_string(), example);
+    assert_eq!(serde_json::to_value(&parsed).unwrap(), json!(example));
+    assert_eq!(
+        serde_json::from_value::<ProjectId>(json!(example)).unwrap(),
+        parsed
+    );
     for s in [
         "0",
         "-1",
@@ -91,16 +100,14 @@ fn project_identity_is_not_a_credential_or_json_number() {
         "1 ",
         "1.0",
         "9223372036854775808",
-        "project_00000000008008000000000000",
+        "42",
     ] {
         assert!(s.parse::<ProjectId>().is_err(), "{s}");
     }
     assert!(serde_json::from_value::<ProjectId>(json!(42)).is_err());
-    for n in [1, 42, i64::MAX] {
-        let id = ProjectId::new(n).unwrap();
-        assert_eq!(serde_json::to_value(id).unwrap(), json!(n.to_string()));
-        assert_eq!(id.to_string().parse::<ProjectId>().unwrap(), id);
-    }
+    let id = ProjectId::new();
+    assert_eq!(serde_json::to_value(&id).unwrap(), json!(id.to_string()));
+    assert_eq!(id.to_string().parse::<ProjectId>().unwrap(), id);
 }
 #[test]
 fn wire_values_enforce_boundaries_without_normalizing() {

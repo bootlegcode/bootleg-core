@@ -1,7 +1,7 @@
 {
   "type": "register",
   "protocol_version": 1,
-  "project_id": "42",
+  "project_id": "project_00000000008008000000000001",
   "container_id": "container_00000000008008000000000000",
   "display_name": "api / web",
   "build_commit": null,

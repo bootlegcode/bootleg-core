@@ -2,5 +2,26 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "title": "DeviceCodeRequest",
   "type": "object",
-  "additionalProperties": false
+  "properties": {
+    "device_name": {
+      "description": "Suggested label only; the approving user may edit it.",
+      "anyOf": [
+        {
+          "$ref": "#/$defs/DisplayName"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    }
+  },
+  "additionalProperties": false,
+  "$defs": {
+    "DisplayName": {
+      "description": "No Unicode control characters or leading/trailing Unicode whitespace.",
+      "type": "string",
+      "maxLength": 128,
+      "minLength": 1
+    }
+  }
 }
