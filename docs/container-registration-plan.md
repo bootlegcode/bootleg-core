@@ -1,8 +1,8 @@
 # Container registration and CLI bootstrap — proposed implementation plan
 
-Status: original milestone proposal, archived in the versioned core repository. The shared wire checkpoint is now implemented in bootleg-core; [contract-v1.md](contract-v1.md) freezes the API/WS decisions and workstream handoffs and takes precedence for wire details. CLI, smuggler and web implementations remain separate work. This milestone updates the sequencing in `boot-leg-design.md`: authenticated discovery and dashboard presence come before file sync.
+Status: original milestone proposal, archived in the versioned core repository. The shared wire checkpoint is now implemented in bootleg-core; [contract-v1.md](contract-v1.md) freezes the API/WS decisions and workstream handoffs and takes precedence for wire details. CLI, smuggler and web registration implementations and coordinated Docker/kind acceptance are now complete; see [registration evidence](registration-evidence.md). The sequencing below records the original proposal, not outstanding blockers. This milestone updates the sequencing in `boot-leg-design.md`: authenticated discovery and dashboard presence come before file sync.
 
-> Historical note: numeric project IDs described below have been superseded by public `project_…` TypeIDs. See [the current identity contract](contract-v1.md#general-encoding-and-security). Public IDs and secret project keys remain separate values despite sharing a prefix.
+> Reconciliation: identity and browser transport descriptions below reflect the implemented contract: public `project_…` TypeIDs and browser SSE. See [the current identity contract](contract-v1.md#general-encoding-and-security). Public IDs and secret project keys remain separate values despite sharing a prefix.
 
 ## Milestone
 
@@ -12,9 +12,9 @@ Defer patch transfer/application, locks, restart-on-sync pipelines, E2EE, exact 
 
 ## Existing foundations
 
-- `bootleg-cli`, `bootleg-smuggler`, and `bootleg-core` are scaffolds.
+- At proposal time, `bootleg-cli`, `bootleg-smuggler`, and `bootleg-core` were scaffolds; registration is now implemented.
 - Web already has project/org authorization, project creation, hashed project keys, rotation, deactivation, deletion, and activity history.
-- Existing projects have numeric public IDs and one current project key. Creation/rotation disclose the key once; existing keys cannot be retrieved.
+- Projects have canonical public `project_…` UUIDv4 TypeIDs and one current project key. Creation/rotation disclose the key once; existing keys cannot be retrieved.
 - Keep existing authorization rules and services; HTTP endpoints are adapters, not new parallel business logic.
 - Project keys authenticate agents, not human users. They must not authorize project creation, membership management, or general account access.
 
@@ -24,7 +24,7 @@ Use these terms consistently in documentation, domain types, API schemas, and co
 
 | Term | Meaning | Handling |
 | --- | --- | --- |
-| ProjectId / `project_id` | Stable public identity of the project; currently numeric. | Nonsecret; safe in URLs, configuration, UI, and logs. Never grants access by itself. |
+| ProjectId / `project_id` | Stable public identity of the project; canonical `project_…` UUIDv4 TypeID. | Nonsecret; safe in URLs, configuration, UI, and logs. Never grants access by itself. |
 | ProjectKey / project token | Raw bearer credential (`project_…`) issued once at creation/rotation. | SECRET; injected as `BOOTLEG_PROJECT_TOKEN`. Never place in URLs, ordinary logs, public metadata, or images. |
 | ProjectKeyHash / `secret_hash` | One-way digest of the raw ProjectKey stored by the server for verification. | Not the raw key and not a client credential. Internal credential-storage data; exclude from API responses, UI, and logs. It must never be accepted as a bearer credential. |
 
@@ -37,14 +37,14 @@ Use these terms consistently in documentation, domain types, API schemas, and co
 - CLI -> web: versioned HTTPS JSON API under `/api/v1`.
 - Smuggler -> web: outbound WSS `/api/v1/agent/connect`; bearer project token in Authorization header, never URL.
 - First milestone only uses registration, acknowledgment, heartbeat, and errors. No remote command execution.
-- UI: authenticated snapshot polling every 3 seconds while visible. This meets near-real-time needs with less complexity than an event stream; SSE can follow without changing the agent protocol.
+- UI: authenticated browser SSE delivers initial and changed snapshots. The server observes shared storage every second and revalidates session/project visibility each iteration; this is not Valkey pub/sub. Hidden tabs close streams; interrupted streams mark retained data stale, and authorization loss clears it.
 - Production requires TLS. Local plaintext requires explicit development configuration.
 
 ### Identity
 
 Separate these fields:
 
-- `project_id`: existing public numeric ID, serialized as a decimal string on the wire.
+- `project_id`: canonical public `project_<26-character encoded UUIDv4>` TypeID, serialized as a string.
 - `container_id`: `ContainerId` serialized as `container_<26-character encoded UUIDv4>`, generated at each smuggler process start; stable across network reconnects, new after process/container restart. Unique target identity within a project.
 - `display_name`: human label, not unique and never used as a routing key.
 - Optional runtime metadata: pod UID/name, namespace, container name, operator-supplied cluster label, runtime hint. These are agent claims, not verified orchestrator identity.
@@ -52,7 +52,7 @@ Separate these fields:
 
 Use the existing `mti` TypeID convention, not raw UUID strings or hand-built encodings. Each identity has a distinct Rust newtype with canonical parsing, expected-prefix and UUID-version validation, and string serialization. New device-grant and CLI-credential record identities use `device_grant_…` and `cli_credential_…`; their public IDs remain separate from secret authorization codes and bearer values. Never interchange IDs solely because their underlying UUID representations match.
 
-Existing project IDs remain numeric for compatibility in this milestone; existing org IDs retain their domain TypeIDs. A project public-ID migration requires an explicit separate contract/data migration: the existing `project_…` value is a SECRET project key, not a public ProjectId. Never expose it as identity metadata.
+The web migration replaces legacy numeric project IDs while preserving activity references; clients must refresh stored project IDs. Existing org IDs retain their domain TypeIDs. The raw project key is SECRET even though it also starts with `project_…`; never expose it as identity metadata.
 
 One pod can have multiple instrumented containers, and identical pod names can occur across clusters/namespaces. Pod UID alone also does not distinguish containers or restarts. Container TypeID identity avoids those collisions without platform dependence. Ubiquitous language: a **Container** is one instrumented process lifetime, a **SmugglerSession** is one accepted control-plane connection, and **Presence** is its time-bounded connectivity—not application health.
 
@@ -174,7 +174,7 @@ This is deliberately more than UI: the missing API/control plane must have an ow
 2. Project API adapters, one-time secret responses, key rotation, API documentation.
 3. Agent WS endpoint, project-scoped registration, fenced shared leases, expiry/cleanup, snapshot endpoint, live-session revocation handling.
 4. Project-detail instances table: display label plus short instance ID, runtime metadata, build SHA/unknown/dirty, connected/offline, process status, and last seen. Empty, loading, stale-data, and permission-error states.
-5. Poll authenticated UI fragments/snapshots every 3 seconds while visible; prevent overlapping polls. On failures show stale state, not falsely current online labels. Recheck access on every request. Existing cookie mutation routes retain CSRF protection.
+5. Deliver bounded snapshots over authenticated browser SSE while visible, with one-second server-side observation and access revalidation each iteration. On failures retain rows as stale; on authorization loss clear them. Hidden tabs close streams and foreground tabs reconnect. Existing cookie mutation routes retain CSRF protection.
 6. Tests for cross-org isolation, spoofed project ID, rotation/deactivation/deletion while connected, reconnect fencing, lease expiry, multiple web replicas, escaped labels, and no secret leakage. Use inline Tailwind; follow repo `just rebuild` / `just test` instructions.
 
 Independent checkpoint: passing domain/application and real PostgreSQL/Valkey adapter tests. Integrated demo: real smuggler connects, table updates and expires, and real CLI performs project operations. Do not edit CLI/smuggler during parallel work.
@@ -190,11 +190,11 @@ End-to-end acceptance:
 1. CLI login approves in browser; CLI creates project without web project forms.
 2. Deploy two kind replicas: two unique instances appear in CLI/UI within 5 seconds of successful registration.
 3. Deploy two instrumented containers in one pod and a plain Docker container; none collide even with identical labels.
-4. Interrupt network: status goes offline within lease timeout plus polling delay; reconnect preserves instance identity and fences stale disconnect callbacks.
+4. Interrupt network: status goes offline within lease timeout plus observation/delivery delay; reconnect preserves instance identity and fences stale disconnect callbacks.
 5. Restart container: new instance identity; old instance becomes offline.
 6. Rotate token or disable project: existing and new unauthorized participation stops; unrelated org cannot view instances.
 7. Stop app/container: correct signal/reaping/exit behavior; web outage does not stop the application.
 8. Missing/dirty SHA visibly prevents claims of a clean sync baseline. No secret appears in Git, images, logs, URLs, or normal list output.
 9. Disabled/no-credentials mode performs no network I/O.
 
-Next milestone: read-only diff preview, then locked, revisioned transfer/apply/ack. Registration must not be described as working file sync.
+Read-only CLI diff preview has subsequently completed (see the linked acceptance evidence). Locked, revisioned transfer/apply/ack remains future work. Neither registration nor read-only preview is working file sync.

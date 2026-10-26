@@ -5,7 +5,8 @@ DB/cache, async runtime, process supervision or presence domain dependencies.
 
 **Start here:** [frozen v1 contract and workstream handoffs](docs/contract-v1.md).
 The [versioned milestone plan](docs/container-registration-plan.md) describes the
-CLI, smuggler and web work remaining.
+original CLI, smuggler and web workstreams; [registration evidence](docs/registration-evidence.md)
+records their completed integration and the supported sibling checkout layout.
 
 - `ids`: canonical typed mti UUIDv4 identities, including `project_…` ProjectId.
 - `values`: bounded wire strings, full Git object IDs, redacted transport secrets.
@@ -32,8 +33,9 @@ From a sibling crate:
 bootleg-core = { path = "../bootleg-core" }
 ```
 
-Workers share this checkout until the coordinator publishes a committed revision;
-then record/pin that revision together. Don't independently modify core contracts.
+Compatible dependency commits are enforced by the sibling CLI's
+`scripts/acceptance-revisions.json`; update pins intentionally after coordinated
+changes. Don't independently modify core contracts.
 Map DTOs explicitly into each bounded context's domain types. Secret-bearing DTOs
 serialize secrets for delivery: never use them as log or default CLI output models.
 

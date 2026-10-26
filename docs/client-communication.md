@@ -1,6 +1,6 @@
 # Client attribution and server-authored messages (v1)
 
-This is a normative extension of [contract-v1.md](contract-v1.md), incorporated before publishing the initial v1 checkpoint. It does not claim the web/CLI/smuggler adapters are implemented.
+This is a normative extension of [contract-v1.md](contract-v1.md), incorporated before publishing the initial v1 checkpoint. Adapter implementation and executed acceptance evidence are recorded separately in [registration evidence](registration-evidence.md).
 
 ## Version attribution on every communication
 
@@ -77,4 +77,4 @@ Smuggler receives the same `notices` list in every registered acknowledgment; it
 
 ### Parallel-work acceptance additions
 
-Core tests cover header parsing/version bounds, all severity roundtrips, server text preservation, notice bounds/uniqueness, fixture/schema agreement and absence of extra commands. CLI tests must prove server-authored copy reaches human/JSON diagnostics, notice suppression/output-channel rules, best-effort bootstrap failures and exit-code independence without mocked API calls. Smuggler tests prove notices cannot affect child lifecycle. Web tests prove every request/WS event is attributable, registration/header version mismatches are rejected, scheduled/targeted public notices are selected correctly, and error wording can change with stable codes. Real-server adapter tests must exercise these end to end once implementations exist.
+Core tests cover header parsing/version bounds, all severity roundtrips, server text preservation, notice bounds/uniqueness, fixture/schema agreement and absence of extra commands. CLI tests must prove server-authored copy reaches human/JSON diagnostics, notice suppression/output-channel rules, best-effort bootstrap failures and exit-code independence without mocked API calls. Smuggler tests prove notices cannot affect child lifecycle. Web tests prove every request/WS event is attributable, registration/header version mismatches are rejected, scheduled/targeted public notices are selected correctly, and error wording can change with stable codes. Real-server adapter tests must exercise these end to end; see the linked registration evidence for executed scenarios and their limits.
