@@ -1,6 +1,6 @@
 # Client attribution and server-authored messages (v1)
 
-This is a normative extension of [contract-v1.md](contract-v1.md), incorporated before publishing the initial v1 checkpoint. Adapter implementation and executed acceptance evidence are recorded separately in [registration evidence](registration-evidence.md).
+This is a normative part of the [v1 wire contract](contract-v1.md).
 
 ## Version attribution on every communication
 
@@ -75,6 +75,6 @@ Smuggler receives the same `notices` list in every registered acknowledgment; it
 - In never mode the CLI may skip bootstrap entirely. Bootstrap is not a compatibility/security gate: actual API requests enforce required protocol and authorization even if banners are suppressed.
 - Local transport failures use local diagnostics. Well-formed server errors use the server's message in both human diagnostics and structured errors. Secret-bearing API DTOs remain excluded from default output.
 
-### Parallel-work acceptance additions
+### Testing adapters
 
-Core tests cover header parsing/version bounds, all severity roundtrips, server text preservation, notice bounds/uniqueness, fixture/schema agreement and absence of extra commands. CLI tests must prove server-authored copy reaches human/JSON diagnostics, notice suppression/output-channel rules, best-effort bootstrap failures and exit-code independence without mocked API calls. Smuggler tests prove notices cannot affect child lifecycle. Web tests prove every request/WS event is attributable, registration/header version mismatches are rejected, scheduled/targeted public notices are selected correctly, and error wording can change with stable codes. Real-server adapter tests must exercise these end to end; see the linked registration evidence for executed scenarios and their limits.
+Core tests cover the wire types and codecs. Test application behavior separately against a real server: CLI output and exit status when notices are present or bootstrap fails; agent notices that don't affect the child process; and server-side version attribution, mismatch rejection, and public notice selection. See [integration and test scope](registration-evidence.md).

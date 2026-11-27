@@ -172,6 +172,7 @@ fn main() {
         "project-token",
         &ProjectTokenResponse {
             project,
+            // Deterministic test value, shaped like a real key but not a live credential.
             project_token: SecretString::new(format!("project_{suffix}")),
         },
     );

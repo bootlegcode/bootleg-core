@@ -1,14 +1,13 @@
 # Container registration contract v1
 
-Status: frozen bootstrap contract for parallel implementation. This crate implements the **wire contract**, not working login, registration, presence storage, or sync. The versioned proposal is [container-registration-plan.md](container-registration-plan.md); this document resolves its open wire decisions and takes precedence for v1. Changes go through the core coordinator, not individual workstreams. [Client attribution and server-authored messages](client-communication.md) is a normative part of this contract: mandatory client/version headers on every native-client request, server display text/severity, and bootstrap/registration announcements.
+This is the v1 wire contract for Bootleg's HTTP API and agent WebSocket protocol. This crate supplies types and codecs; clients and the server implement the behavior specified here. [Client attribution and server-authored messages](client-communication.md) is a normative part of this contract: required client/version headers on native-client requests, server display text and severity, and bootstrap and registration announcements.
 
 ## Artifacts and compatibility
 
 - `src/{ids,values,api,protocol}.rs`: portable identities, validated wire scalars, DTOs, bounded JSON frame helpers.
 - `schemas/v1/*.json`: generated JSON Schema 2020-12. Semantic constraints below (UUID version/variant, integer range, Unicode whitespace/control validation, permissions, timing) are mandatory even when not expressible in a schema. Schemas do not replace domain validation.
 - `fixtures/v1/*.json`: deterministic examples, including all error codes. All credentials in fixtures are public test values and must never be deployed. Fixtures are not mock servers.
-- Run `cargo test`, `cargo clippy --all-targets -- -D warnings`, and `cargo fmt --check` independently, with no PostgreSQL/Valkey/network services. Regenerate artifacts with `cargo run --example export-schemas` and `cargo run --example export-fixtures`; tests reject schema drift.
-- All workers must use the same core checkout/revision. Sibling dependency during development: `bootleg-core = { path = "../bootleg-core" }`. Record `git -C ../bootleg-core rev-parse HEAD` in handoffs once the coordinator commits this checkpoint. Do not pin the old scaffold revision or independently edit core. No published crate release is implied.
+- See the [README](../README.md#development) for local checks and artifact generation. CI checks that regenerating schemas and fixtures leaves the committed artifacts unchanged. Coordinate wire changes with clients and the server.
 
 ## General encoding and security
 
@@ -87,18 +86,6 @@ Post-upgrade errors are `ServerFrame::Error` with the same envelope fields, foll
 
 Initial per-project bounds: 10,000 retained Containers (including offline), 1,000 concurrent accepted sessions, one current session per ContainerId. At the active-session quota, only replacement of an already-connected current session is exempt because it does not increase occupancy. Reconnecting a retained offline Container requires an available active-session slot, just like a new Container. Connected means both the durable lease and the shared lease store agree on the unexpired current session. At the retained-record quota, existing Containers may reconnect or replace sessions subject to the active-session bound; new Containers are rejected until cleanup creates room. Admission checks and session replacement must serialize per project across web replicas using shared authoritative stores. Limit pending upgrades to 20/source IP and agent handshakes to 120/min/source IP; web adapters must enforce these across replicas. Quotas can be lowered operationally, with quota_exceeded responses. IDs and metadata are claims from authorized agents, not cryptographic proof of runtime identity.
 
-## Workstream handoff
+## Validation scope
 
-### CLI (`bootleg-cli` only)
-
-Own workflow/config policies, secure origin-scoped user credential storage, API adapter and safe human/JSON projections. Implement login/logout/whoami at the routes above; preserve one-time key delivery, no blind mutation retries, and key/identity separation. Build baseline classification lives here, not in core; never equate a commit with filesystem equality. Deployment generation writes name-env references without reading laptop environment variables, Downward API entries and runtime Secret references; no automatic apply. Prove workflows, secret redaction, Git edge cases and generator behavior directly with domain/application tests. Integrate later against real web sockets, not canned API responses.
-
-### Smuggler (`bootleg-smuggler` only)
-
-Own config/name precedence, no-credentials/disabled zero-network policy, typed ContainerId lifetime, session/reconnect policy and process supervision. Start child independently of network success. Resolve missing explicitly selected env vars as errors; partial credentials as errors; disabled mode overrides all. Use core bounded frame helpers at the WS boundary, never arbitrary command handling. Test policies with explicit time/IDs and real children/signals; then real web integration and Linux PID 1/container tests. No core or web edits.
-
-### Web (`bootleg-web` only)
-
-Own device grants/user credential domain, reuse existing authorization and project key/settings services, container-presence aggregate and use cases. Implement fencing/replacement/expiry/credential invalidation directly in domain/application methods, with transactional PostgreSQL metadata and atomic shared Valkey leases. DTOs are not aggregates. Test denied access, duplicate labels, stale renew/disconnect, replacement and exact expiry boundaries without mocked HTTP/WS. Prove cross-replica atomicity, TTL and credential invalidation against real stores; transport tests use real clients/server. UI streams bounded authenticated snapshots over SSE, escapes metadata and distinguishes stale/offline from readiness. Follow repo rebuild/test instructions.
-
-Core tests prove only scalar/protocol/serialization behavior. The separate implementations have since passed coordinated registration acceptance with actual CLI + smuggler + web on Docker and kind; see [evidence, compatible checkouts and scope](registration-evidence.md). Supplemental stale-session fencing tests use real stores/protocol clients, not the smuggler executable. No transfer or remote filesystem mutation is implemented.
+The wire checks in this crate do not validate client or server application behavior. See [integration and test scope](registration-evidence.md) for the distinction.

@@ -1,43 +1,43 @@
 # bootleg-core
 
-Portable Rust wire contracts for the container-registration milestone. No web,
-DB/cache, async runtime, process supervision or presence domain dependencies.
+Portable Rust types and protocol helpers for Bootleg's v1 HTTP API and agent
+WebSocket protocol. This crate defines the wire format; it does not run a server,
+authenticate requests, manage presence, supervise processes, or synchronize files.
 
-**Start here:** [frozen v1 contract and workstream handoffs](docs/contract-v1.md).
-The [versioned milestone plan](docs/container-registration-plan.md) describes the
-original CLI, smuggler and web workstreams; [registration evidence](docs/registration-evidence.md)
-records their completed integration and the supported sibling checkout layout.
+- [v1 wire contract](docs/contract-v1.md): routes, credentials, errors, and registration frames.
+- [Client communication](docs/client-communication.md): required version headers,
+  server-authored messages, and script-safe notice handling.
+- [Integration and test scope](docs/registration-evidence.md): what core tests
+  cover and what requires the companion applications.
+- [`schemas/v1`](schemas/v1) and [`fixtures/v1`](fixtures/v1): generated JSON
+  schemas and deterministic examples for clients in any language. Example
+  credentials are synthetic and must not be used outside tests.
 
-- `ids`: canonical typed mti UUIDv4 identities, including `project_…` ProjectId.
-- `values`: bounded wire strings, full Git object IDs, redacted transport secrets.
-- `api`: device login, identity, projects, snapshots, pagination and errors.
-- `communication`: required client/version header parsing, message levels and bounded notices.
-  See [client communication contract](docs/client-communication.md) for bootstrap,
-  server-authored error text, and script-safe banner suppression.
-- `protocol`: registration/heartbeat DTOs and bounded JSON frame codecs.
-- `schemas/v1`, `fixtures/v1`: cross-language schemas and golden examples.
+## Development
+
+Run these checks from the repository root with Rust, rustfmt, and Clippy. CI
+currently uses Rust 1.99.1. No running Bootleg service, database, or cache is needed.
 
 ```sh
-cargo test
-cargo clippy --all-targets -- -D warnings
 cargo fmt --check
-# Regenerate published artifacts after a coordinated contract change:
-cargo run --example export-schemas
-cargo run --example export-fixtures
+cargo clippy --locked --all-targets -- -D warnings
+cargo test --locked --all-targets
+cargo test --locked --doc
 ```
 
-From a sibling crate:
+After a wire contract change, regenerate and commit the affected artifacts:
 
-```toml
-[dependencies]
-bootleg-core = { path = "../bootleg-core" }
+```sh
+cargo run --locked --example export-schemas
+cargo run --locked --example export-fixtures
 ```
 
-Compatible dependency commits are enforced by the sibling CLI's
-`scripts/acceptance-revisions.json`; update pins intentionally after coordinated
-changes. Don't independently modify core contracts.
-Map DTOs explicitly into each bounded context's domain types. Secret-bearing DTOs
-serialize secrets for delivery: never use them as log or default CLI output models.
+Coordinate wire changes with consumers and update the contract docs, schemas,
+and fixtures together. At application boundaries, map wire types to domain
+values explicitly. Secret-bearing types redact `Debug` but serialize credential
+values for delivery; don't use them for logs or default CLI output.
 
-Passing core tests proves wire/scalar behavior, **not** integrated login,
-registration, process supervision, presence fencing or file sync.
+## License
+
+[Business Source License 1.1](LICENSE) with a limited production-use grant.
+Public source availability does not remove the license's use restrictions.

@@ -1,1 +1,5 @@
-/target
+/target/
+/.pi/
+.env
+.env.*
+!.env.example
